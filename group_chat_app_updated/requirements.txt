@@ -1,0 +1,9 @@
+Flask
+Flask-SocketIO
+Flask-Login
+Flask-WTF
+Flask-Mail
+Flask-SQLAlchemy
+itsdangerous
+eventlet
+python-dotenv

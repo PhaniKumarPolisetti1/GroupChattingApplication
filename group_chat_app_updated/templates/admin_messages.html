@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Messages - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .messages-header {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .messages-header h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .filter-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .filter-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 15px;
+        align-items: end;
+    }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .filter-group label {
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .filter-group select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .btn-filter {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        height: 42px;
+    }
+    .btn-clear {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 10px;
+        height: 42px;
+        text-decoration: none;
+        display: inline-block;
+        line-height: 22px;
+    }
+    .messages-table {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th {
+        background: #667eea;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        vertical-align: top;
+    }
+    tr:hover {
+        background: #f8f9fa;
+    }
+    .message-content {
+        max-width: 400px;
+        word-wrap: break-word;
+    }
+    .message-image {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-text {
+        background: #28a745;
+        color: white;
+    }
+    .badge-image {
+        background: #007bff;
+        color: white;
+    }
+    .badge-video {
+        background: #dc3545;
+        color: white;
+    }
+    .btn-edit {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        margin-right: 5px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-edit:hover {
+        background: #0056b3;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+    }
+    .no-messages {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="messages-header">
+    <h1>💬 Manage Messages</h1>
+    <p>View, edit, and delete chat messages across all rooms</p>
+</div>
+
+<!-- Filters -->
+<div class="filter-section">
+    <form method="GET" action="{{ url_for('admin_messages') }}">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="room">Filter by Room</label>
+                <select id="room" name="room">
+                    <option value="">All Rooms</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.room_id }}" {% if room_filter == room.room_id %}selected{% endif %}>
+                        {{ room.room_name }} ({{ room.room_id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="user">Filter by User</label>
+                <select id="user" name="user">
+                    <option value="">All Users</option>
+                    {% for user in users %}
+                    <option value="{{ user.username }}" {% if user_filter == user.username %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <button type="submit" class="btn-filter">Apply Filters</button>
+                <a href="{{ url_for('admin_messages') }}" class="btn-clear">Clear</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Messages Table -->
+<div class="messages-table">
+    <h2 style="margin-bottom: 20px; color: #333;">
+        All Messages 
+        <span style="font-size: 16px; color: #666;">({{ messages|length }} messages)</span>
+    </h2>
+    
+    {% if messages %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Room</th>
+                <th>User</th>
+                <th>Message</th>
+                <th>Type</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for msg in messages %}
+            <tr>
+                <td>{{ msg.id }}</td>
+                <td>{{ msg.room_id }}</td>
+                <td><strong>{{ msg.username }}</strong></td>
+                <td class="message-content">
+                    {% if msg.message_type == 'text' %}
+                        {{ msg.message }}
+                    {% elif msg.message_type == 'image' %}
+                        <img src="{{ msg.file_url }}" alt="Image" class="message-image" onclick="window.open('{{ msg.file_url }}', '_blank')">
+                        {% if msg.message %}
+                        <div style="margin-top: 5px;">{{ msg.message }}</div>
+                        {% endif %}
+                    {% elif msg.message_type == 'video' %}
+                        <video src="{{ msg.file_url }}" controls style="max-width: 200px; max-height: 150px;"></video>
+                        {% if msg.message %}
+                        <div style="margin-top: 5px;">{{ msg.message }}</div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if msg.message_type == 'text' %}
+                        <span class="badge badge-text">Text</span>
+                    {% elif msg.message_type == 'image' %}
+                        <span class="badge badge-image">Image</span>
+                    {% elif msg.message_type == 'video' %}
+                        <span class="badge badge-video">Video</span>
+                    {% endif %}
+                </td>
+                <td>{{ msg.timestamp.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                <td>
+                    {% if msg.message_type == 'text' %}
+                    <a href="{{ url_for('admin_edit_message', message_id=msg.id) }}" class="btn-edit">Edit</a>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin_delete_message', message_id=msg.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Delete this message?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-messages">
+        <p>No messages found</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

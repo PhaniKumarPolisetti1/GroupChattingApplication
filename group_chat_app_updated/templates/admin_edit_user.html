@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit User - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .edit-header {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .edit-header h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .edit-form {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    .form-help {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+    .btn-submit {
+        flex: 1;
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .btn-submit:hover {
+        background: #5568d3;
+    }
+    .btn-cancel {
+        flex: 1;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-cancel:hover {
+        background: #5a6268;
+    }
+    .alert {
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .alert-danger {
+        background: #fee;
+        color: #c33;
+        border: 1px solid #fcc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <div class="edit-header">
+        <h1>✏️ Edit User</h1>
+        <p>Update user information</p>
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="edit-form">
+        <form method="POST" action="{{ url_for('admin_edit_user', user_id=user.id) }}">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">New Password (Optional)</label>
+                <input type="password" id="password" name="password" minlength="6">
+                <div class="form-help">Leave blank to keep current password. Minimum 6 characters if changing.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <select id="role" name="role" required>
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Update User</button>
+                <a href="{{ url_for('admin_users') }}" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

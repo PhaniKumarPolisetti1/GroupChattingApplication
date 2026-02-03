@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Group Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* ==========================================
+           COLORFUL ANIMATED BUBBLES BACKGROUND
+           ========================================== */
+        
+        .bubbles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Colorful Rising Bubbles */
+        .bubble {
+            position: absolute;
+            bottom: -150px;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: rise 15s infinite ease-in;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Pulsing Colorful Bubbles */
+        .bubble-pulse {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: pulse 4s infinite ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Floating Colorful Bubbles */
+        .bubble-float {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Spinning Colorful Bubbles */
+        .bubble-spin {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: spin 8s infinite linear;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Blue Bubbles */
+        .bubble:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            left: 10%;
+            background: radial-gradient(circle at 30% 30%, #4facfe, #00f2fe);
+            animation-duration: 8s;
+            animation-delay: 0s;
+        }
+        
+        .bubble:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            left: 20%;
+            background: radial-gradient(circle at 30% 30%, #a8edea, #fed6e3);
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+        
+        /* Pink/Purple Bubbles */
+        .bubble:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 35%;
+            background: radial-gradient(circle at 30% 30%, #f093fb, #f5576c);
+            animation-duration: 10s;
+            animation-delay: 2s;
+        }
+        
+        .bubble:nth-child(4) {
+            width: 50px;
+            height: 50px;
+            left: 50%;
+            background: radial-gradient(circle at 30% 30%, #fa709a, #fee140);
+            animation-duration: 7s;
+            animation-delay: 0s;
+        }
+        
+        /* Green Bubbles */
+        .bubble:nth-child(5) {
+            width: 70px;
+            height: 70px;
+            left: 60%;
+            background: radial-gradient(circle at 30% 30%, #30cfd0, #c43ad6);
+            animation-duration: 9s;
+            animation-delay: 1.5s;
+        }
+        
+        .bubble:nth-child(6) {
+            width: 45px;
+            height: 45px;
+            left: 70%;
+            background: radial-gradient(circle at 30% 30%, #a8edea, #fed6e3);
+            animation-duration: 8s;
+            animation-delay: 3s;
+        }
+        
+        /* Orange Bubbles */
+        .bubble:nth-child(7) {
+            width: 55px;
+            height: 55px;
+            left: 80%;
+            background: radial-gradient(circle at 30% 30%, #ff9a56, #ff6a88);
+            animation-duration: 11s;
+            animation-delay: 2s;
+        }
+        
+        .bubble:nth-child(8) {
+            width: 65px;
+            height: 65px;
+            left: 15%;
+            background: radial-gradient(circle at 30% 30%, #ffecd2, #fcb69f);
+            animation-duration: 7s;
+            animation-delay: 4s;
+        }
+        
+        /* Pulsing Colorful Bubbles */
+        .bubble-pulse:nth-child(9) {
+            width: 90px;
+            height: 90px;
+            top: 20%;
+            left: 25%;
+            background: radial-gradient(circle at 30% 30%, #4facfe 0%, #00f2fe 100%);
+            animation-duration: 3s;
+            animation-delay: 0s;
+        }
+        
+        .bubble-pulse:nth-child(10) {
+            width: 70px;
+            height: 70px;
+            top: 50%;
+            left: 70%;
+            background: radial-gradient(circle at 30% 30%, #f093fb 0%, #f5576c 100%);
+            animation-duration: 4s;
+            animation-delay: 1s;
+        }
+        
+        .bubble-pulse:nth-child(11) {
+            width: 100px;
+            height: 100px;
+            top: 75%;
+            left: 15%;
+            background: radial-gradient(circle at 30% 30%, #a8edea 0%, #fed6e3 100%);
+            animation-duration: 3.5s;
+            animation-delay: 2s;
+        }
+        
+        /* Floating Colorful Bubbles */
+        .bubble-float:nth-child(12) {
+            width: 75px;
+            height: 75px;
+            top: 15%;
+            left: -100px;
+            background: radial-gradient(circle at 30% 30%, #fa709a 0%, #fee140 100%);
+            animation-duration: 18s;
+            animation-delay: 0s;
+        }
+        
+        .bubble-float:nth-child(13) {
+            width: 55px;
+            height: 55px;
+            top: 45%;
+            left: -80px;
+            background: radial-gradient(circle at 30% 30%, #30cfd0 0%, #c43ad6 100%);
+            animation-duration: 22s;
+            animation-delay: 3s;
+        }
+        
+        .bubble-float:nth-child(14) {
+            width: 85px;
+            height: 85px;
+            top: 70%;
+            left: -120px;
+            background: radial-gradient(circle at 30% 30%, #ff9a56 0%, #ff6a88 100%);
+            animation-duration: 20s;
+            animation-delay: 5s;
+        }
+        
+        /* Spinning Colorful Bubbles */
+        .bubble-spin:nth-child(15) {
+            width: 65px;
+            height: 65px;
+            top: 25%;
+            left: 55%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            animation-duration: 10s;
+            animation-delay: 0s;
+        }
+        
+        .bubble-spin:nth-child(16) {
+            width: 50px;
+            height: 50px;
+            top: 55%;
+            left: 40%;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            animation-duration: 12s;
+            animation-delay: 2s;
+        }
+        
+        .bubble-spin:nth-child(17) {
+            width: 60px;
+            height: 60px;
+            top: 80%;
+            left: 65%;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            animation-duration: 9s;
+            animation-delay: 4s;
+        }
+        
+        /* More Colorful Rising Bubbles */
+        .bubble:nth-child(18) {
+            width: 48px;
+            height: 48px;
+            left: 8%;
+            background: radial-gradient(circle at 30% 30%, #667eea, #764ba2);
+            animation-duration: 7s;
+            animation-delay: 3s;
+        }
+        
+        .bubble:nth-child(19) {
+            width: 72px;
+            height: 72px;
+            left: 88%;
+            background: radial-gradient(circle at 30% 30%, #30cfd0, #a8edea);
+            animation-duration: 9s;
+            animation-delay: 1s;
+        }
+        
+        .bubble:nth-child(20) {
+            width: 58px;
+            height: 58px;
+            left: 42%;
+            background: radial-gradient(circle at 30% 30%, #ffecd2, #fcb69f);
+            animation-duration: 10s;
+            animation-delay: 4s;
+        }
+        
+        /* Animations */
+        @keyframes rise {
+            0% {
+                bottom: -150px;
+                transform: translateX(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateX(-50px) scale(1.1);
+            }
+            100% {
+                bottom: 110vh;
+                transform: translateX(100px) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.3;
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                left: -150px;
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-30px) scale(1.1);
+            }
+            100% {
+                left: 110%;
+                transform: translateY(20px) scale(0.9);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: rotate(180deg) scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+                opacity: 0.7;
+            }
+        }
+        
+        /* ========================================== */
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .remember-me label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .separator {
+            color: #999;
+            margin: 0 10px;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #fcc;
+        }
+    </style>
+</head>
+<body>
+    <!-- COLORFUL ANIMATED BUBBLES BACKGROUND -->
+    <div class="bubbles-container">
+        <!-- Rising Colorful Bubbles (11 total) -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        
+        <!-- Pulsing Colorful Bubbles (3 total) -->
+        <div class="bubble-pulse"></div>
+        <div class="bubble-pulse"></div>
+        <div class="bubble-pulse"></div>
+        
+        <!-- Floating Colorful Bubbles (3 total) -->
+        <div class="bubble-float"></div>
+        <div class="bubble-float"></div>
+        <div class="bubble-float"></div>
+        
+        <!-- Spinning Colorful Bubbles (3 total) -->
+        <div class="bubble-spin"></div>
+        <div class="bubble-spin"></div>
+        <div class="bubble-spin"></div>
+        
+        <!-- More Rising Colorful Bubbles (3 total) -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="login-container">
+        <h1>WELCOME TO GROUP CHAT</h1>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </div>
+            
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <div class="links">
+            <a href="/register">Create Account</a>
+            <span class="separator">|</span>
+            <a href="/forgot">Forgot Password?</a>
+        </div>
+    </div>
+</body>
+</html>

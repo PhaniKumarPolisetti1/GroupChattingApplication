@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Message - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .edit-header {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .edit-header h1 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .edit-form {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .message-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .message-info p {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+    .message-info strong {
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-family: inherit;
+        min-height: 120px;
+        resize: vertical;
+    }
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+    .btn-submit {
+        flex: 1;
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .btn-submit:hover {
+        background: #5568d3;
+    }
+    .btn-cancel {
+        flex: 1;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-cancel:hover {
+        background: #5a6268;
+    }
+    .alert {
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .alert-danger {
+        background: #fee;
+        color: #c33;
+        border: 1px solid #fcc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <div class="edit-header">
+        <h1>✏️ Edit Message</h1>
+        <p>Update message content</p>
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="edit-form">
+        <div class="message-info">
+            <p><strong>Message ID:</strong> {{ message.id }}</p>
+            <p><strong>Room:</strong> {{ message.room_id }}</p>
+            <p><strong>User:</strong> {{ message.username }}</p>
+            <p><strong>Sent:</strong> {{ message.timestamp.strftime('%Y-%m-%d %I:%M %p') }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin_edit_message', message_id=message.id) }}">
+            <div class="form-group">
+                <label for="message">Message Text *</label>
+                <textarea id="message" name="message" required>{{ message.message }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Update Message</button>
+                <a href="{{ url_for('admin_messages') }}" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

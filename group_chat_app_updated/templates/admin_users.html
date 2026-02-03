@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .users-header {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .users-header h1 {
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .btn-add {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+    .btn-add:hover {
+        background: #218838;
+    }
+    .add-user-form {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        display: none;
+    }
+    .add-user-form.show {
+        display: block;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group label {
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .form-group input,
+    .form-group select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    .form-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .btn-submit {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .users-table {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th {
+        background: #667eea;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+    tr:hover {
+        background: #f8f9fa;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .badge-admin {
+        background: #ffc107;
+        color: #333;
+    }
+    .badge-user {
+        background: #28a745;
+        color: white;
+    }
+    .btn-edit {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        margin-right: 5px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-edit:hover {
+        background: #0056b3;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="users-header">
+    <div>
+        <h1>👥 Manage Users</h1>
+        <p>View and manage all registered users</p>
+    </div>
+    <button class="btn-add" onclick="toggleAddForm()">+ Add New User</button>
+</div>
+
+<!-- Add User Form -->
+<div class="add-user-form" id="addUserForm">
+    <h2 style="margin-bottom: 20px; color: #333;">Add New User</h2>
+    <form method="POST" action="{{ url_for('admin_add_user') }}">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <select id="role" name="role" required>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Add User</button>
+            <button type="button" class="btn-cancel" onclick="toggleAddForm()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div class="users-table">
+    <h2 style="margin-bottom: 20px; color: #333;">All Users</h2>
+    
+    {% if users %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.role == 'admin' %}
+                        <span class="badge badge-admin">Admin</span>
+                    {% else %}
+                        <span class="badge badge-user">User</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <a href="{{ url_for('admin_edit_user', user_id=user.id) }}" class="btn-edit">Edit</a>
+                    {% if user.email != 'admin@example.com' %}
+                    <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Delete this user?')">Delete</button>
+                    </form>
+                    {% else %}
+                    <span style="color: #999; font-size: 13px; margin-left: 5px;">Protected</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #666;">No users found.</p>
+    {% endif %}
+</div>
+
+<script>
+function toggleAddForm() {
+    const form = document.getElementById('addUserForm');
+    form.classList.toggle('show');
+}
+</script>
+{% endblock %}
